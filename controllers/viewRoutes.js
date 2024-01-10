@@ -2,11 +2,18 @@ const viewRouter = require('express').Router();
 const { Project, User } = require('../models');
 
 viewRouter.get('/', async (req, res) => {
-  const projectsData = await Project.findAll();
+  const projectsData = await Project.findAll({
+    include: [
+      {
+        model: User,
+        attributes: ['name'],
+      },
+    ],
+  });
 
-  console.log(projectsData);
+  const projects = projectsData.map((datum) => datum.get({ plain: true }));
 
-  res.status(200).render('home');
+  res.status(200).render('home', { projects });
 });
 
 viewRouter.get('/login', (req, res) => {
